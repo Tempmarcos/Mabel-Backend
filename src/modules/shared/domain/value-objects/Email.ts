@@ -1,10 +1,9 @@
 import { ValueObject } from "../ValueObject";
+import { Validador } from "./Validador";
 
 function normalizar(email: string): string {
   return email
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+    .toLowerCase().trim();
 }
 
 export class Email extends ValueObject<string> {
@@ -15,14 +14,18 @@ export class Email extends ValueObject<string> {
   static criar(email: string): Email {
     const normalizado = normalizar(email)
 
-    if (!normalizado.includes('@')) {
-      throw new Error('Email inválido');
+    const resultado = Validador.combinar(
+        Validador.naoVazio(normalizado, "Email"),
+        Validador.tamanhoMinimo(normalizado, 6, "Email"),
+        Validador.tamanhoMaximo(normalizado, 100, "Email"),
+        Validador.regex(normalizado, /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Email", 
+            "conter um formato válido"),
+    );
+
+    if (!resultado.valido) {
+        throw new Error(resultado.erro);
     }
 
     return new Email(normalizado);
-  }
-
-  get valor(): string {
-    return this._props;
   }
 }

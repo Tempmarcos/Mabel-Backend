@@ -2,6 +2,7 @@ import { AggregateRoot } from "../../shared/domain/AggregateRoot";
 import { Identifier } from "../../shared/domain/Identifier";
 import { Email } from "../../shared/domain/value-objects/Email";
 import { Nome } from "../../shared/domain/value-objects/Nome";
+import { criarEventoUsuarioCadastrado } from "./events/UsuarioCadastrado";
 
 export class UserId extends Identifier {
     constructor(valor: string){
@@ -16,7 +17,6 @@ interface UserProps {
 }
 
 export class User extends AggregateRoot<UserId>{
-
     private readonly _email: Email;
     private readonly _nome: Nome;
 
@@ -34,7 +34,9 @@ export class User extends AggregateRoot<UserId>{
             {email, nome}
         )
 
-        user.adicionarEvento
+        user.adicionarEvento(
+            new criarEventoUsuarioCadastrado(user._id, user._email, )
+        )
     }
 
     get email(): Email {
