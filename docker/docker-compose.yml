@@ -1,0 +1,18 @@
+services:
+  backend:
+    build:
+      context: .
+    ports:
+      - 3333:3333
+    volumes:
+      - ..:/app
+    working_dir: /app
+    command: sleep infinity
+  db:
+    image: postgres:14.3
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: app

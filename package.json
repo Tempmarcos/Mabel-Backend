@@ -5,7 +5,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "build": "tsup src",
+    "dev": "tsx watch src/server.ts",
+    "docker:build": "docker build -t mabel_backend docker",
+    "docker:run": "docker run -it -v $(pwd)/.:/app mabel_backend bash",
+    "compose:up": "docker compose --env-file ./.env -f docker/docker-compose.yml up -d --build",
+    "compose:down": "docker compose -f docker/docker-compose.yml down",
+    "compose:exec": "docker compose --env-file ./.env -f docker/docker-compose.yml exec -it backend bash"
   },
   "author": "",
   "license": "ISC",

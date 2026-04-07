@@ -9,6 +9,7 @@
     // See also https://aka.ms/tsconfig/module
     "module": "commonjs",
     "esModuleInterop": true,
+    "ignoreDeprecations": "6.0",
     "moduleResolution": "node",
     "target": "esnext",
     "types": [],
