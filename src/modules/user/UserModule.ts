@@ -1,11 +1,12 @@
-import { EventLoggerHandler } from '../logging/application/handlers/EventLoggerHandler';
-import { PrismaLogRepository } from '../logging/infra/persistence/PrismaLogRepository';
+
+import { EventLoggerHandler } from '../logging/application/EventLoggerHandler';
+import { LogRepository } from '../logging/domain/LogRepository';
 import { EventBus } from '../shared/application/EventBus';
+import { IdGenerator } from '../shared/application/IdGenerator';
 
 export class UserModule {
-  static inicializar(eventBus: EventBus): void {
-    const logRepository = new PrismaLogRepository();
-    const loggerHandler = new EventLoggerHandler(logRepository, 'Users');
+  static inicializar(logRepository: LogRepository, eventBus: EventBus, idGenerator: IdGenerator): void {
+    const loggerHandler = new EventLoggerHandler(logRepository, 'Users', idGenerator);
 
     eventBus.inscrever('UsuarioCadastrado', loggerHandler);
     // eventBus.inscrever('UsuarioCadastrado', admHandler);

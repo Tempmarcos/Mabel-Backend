@@ -8,7 +8,7 @@ export interface UsuarioCadastradoEvent extends DomainEvent {
     usuarioId: string;
     email: string;
     tipo: TipoUsuario;
-    nomeCompleto: string;
+    nome: string;
   };
 }
 
@@ -16,7 +16,7 @@ export function criarEventoUsuarioCadastrado(
   usuarioId: string,
   email: string,
   tipo: TipoUsuario,
-  nomeCompleto: string
+  nome: string
 ): UsuarioCadastradoEvent {
   return {
     nomeEvento: UserEventType.USUARIO_CADASTRADO,
@@ -26,7 +26,7 @@ export function criarEventoUsuarioCadastrado(
       usuarioId,
       email,
       tipo,
-      nomeCompleto
+      nome
     }
   };
 }

@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,6 +5,89 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url= env("DATABASE_URL")
 }
 
+model Aluno {
+  id                String @id @default (uuid())
+  nome              String
+  dataNascimento    DateTime
+  rua               String
+  numero            String
+  bairro            String
+  cidade            String
+  estado            String
+  cep               String
+  complemento       String ?
+  ativo             Boolean @default (true)
+  dataMatricula     DateTime @default (now())
+  turmaId           String ?
+  planoId           String ?
+
+      // Responsáveis (JSON para flexibilidade)
+      pai               Json ?
+        mae               Json ?
+          responsavelFinanceiro Json
+
+  @@map("alunos")
+}
+
+model Usuario {
+  id            String @id @default (uuid())
+  email         String @unique
+  senhaHash     String
+  nomeCompleto  String
+  tipo          String   // ADMIN, COORDENADOR, PROFESSOR, etc.
+  ativo         Boolean @default (true)
+  dataCriacao   DateTime @default (now())
+  ultimoLogin   DateTime ?
+
+    @@map("usuarios")
+}
+
+model LogEvento {
+  id                String @id @default (uuid())
+  nomeEvento        String
+  dataOcorrencia    DateTime
+  aggregateId       String
+  dados             Json
+  moduloOrigem      String
+  dataPersistencia  DateTime @default (now())
+
+  @@index([nomeEvento])
+  @@index([aggregateId])
+  @@index([dataOcorrencia])
+  @@map("logs_eventos")
+}
+
+model Turma {
+  id          String @id @default (uuid())
+  nome        String
+  turno       String   // MANHA, TARDE
+  anoLetivo   Int
+  capacidade  Int
+  ativa       Boolean @default (true)
+
+  @@map("turmas")
+}
+
+model Professor {
+  id            String @id @default (uuid())
+  nomeCompleto  String
+  email         String @unique
+  telefone      String
+  especialidade String ?
+    ativo         Boolean @default (true)
+
+  @@map("professores")
+}
+
+model Plano {
+  id              String @id @default (uuid())
+  nome            String   // "Plano 3x Semana", "Plano 5x Semana"
+  descricao       String
+  frequenciaSemanal Int    // 3, 5, etc.
+  valorMensal     Decimal @db.Decimal(10, 2)
+  ativo           Boolean @default (true)
+
+  @@map("planos")
+}
