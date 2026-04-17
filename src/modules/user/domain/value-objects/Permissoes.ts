@@ -1,6 +1,6 @@
 import { ValueObject } from "../../../shared/domain/ValueObject";
 
-enum permissions  {
+export enum permissions  {
     //USERS
     VerUsuarios = 'verUsuarios',        //Permissão para listar usuários da empresa
     CriarUsuarios = 'criarUsuarios',    //Permissão para criar usuários
@@ -9,6 +9,11 @@ enum permissions  {
     VerInfoUsuario = 'verInfoUsuario',  //Permissão para dar get em um usuário
 
     //ALUNOS
+    VerAlunos = 'verAlunos',            //Permissão para listar os alunos
+    CriarAlunos = 'criarAlunos',    //Permissão para criar usuários
+    DeletarAlunos = 'deletarAlunos',//Permissão para deletar usuários
+    EditarAlunos ='editarAlunos',  //Permissão para editar usuários
+    VerInfoAluno = 'verInfoAluno',  //Permissão para dar get em um usuário
 
     //TAREFAS
     CriarTarefas = 'criarTarefas',
@@ -20,10 +25,6 @@ enum permissions  {
     //FINANCEIRO
 }
 
-const permissionEnum = z.nativeEnum(permissions)
-
-export const permissionSchema= z.array(permissionEnum)
-
 export class Permissoes extends ValueObject<string[]> {
     private constructor(valor: string[]){
         super(valor)
@@ -31,11 +32,7 @@ export class Permissoes extends ValueObject<string[]> {
 
     static giveAllPermissoes(userPermissions : string[]){
         userPermissions.length = 0; 
-        userPermissions.push(
-            'verUsuarios', 'criarUsuarios', 'deletarUsuarios', 'editarUsuarios', 
-            'verInfoUsuario', 'verDados', 'editarDados', 'verItens', 'adicionarItens', 'editarItens',
-            'deletarItens', 'verEntidades', 'adicionarEntidades', 'editarEntidades',
-            'deletarEntidades', 'criarTarefas', 'verPropostas', 'deletarPropostas', 'criarPropostas');
+        userPermissions.push(...Object.values(Permissoes));
     }
 
     static comparePermissions(permissions : string[], userPermissions : string[]){
