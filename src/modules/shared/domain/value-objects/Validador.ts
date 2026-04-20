@@ -23,6 +23,20 @@ export class Validador {
     return { valido: true };
   }
 
+  static tamanhoMinimoArray(valor: string[], min: number, campo: string): ValidationResult {
+    if (valor.length < min) {
+      return { valido: false, erro: `${campo} deve ter no mínimo ${min} caracteres` };
+    }
+    return { valido: true };
+  }
+
+  static tamanhoMaximoArray(valor: string[], max: number, campo: string): ValidationResult {
+    if (valor.length > max) {
+      return { valido: false, erro: `${campo} deve ter no máximo ${max} caracteres` };
+    }
+    return { valido: true };
+  }
+
   static regex(valor: string, pattern: RegExp, campo: string, descricao: string): ValidationResult {
     if (!pattern.test(valor)) {
       return { valido: false, erro: `${campo} deve ${descricao}` };

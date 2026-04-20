@@ -1,19 +1,20 @@
+import { Validador } from "../../../shared/domain/value-objects/Validador";
 import { ValueObject } from "../../../shared/domain/ValueObject";
 
 export enum permissions  {
     //USERS
-    VerUsuarios = 'verUsuarios',        //Permissão para listar usuários da empresa
-    CriarUsuarios = 'criarUsuarios',    //Permissão para criar usuários
-    DeletarUsuarios = 'deletarUsuarios',//Permissão para deletar usuários
-    EditarUsuarios ='editarUsuarios',  //Permissão para editar usuários
-    VerInfoUsuario = 'verInfoUsuario',  //Permissão para dar get em um usuário
+    VerUsuarios = 'verUsuarios',
+    CriarUsuarios = 'criarUsuarios',
+    DeletarUsuarios = 'deletarUsuarios',
+    EditarUsuarios ='editarUsuarios',
+    VerInfoUsuario = 'verInfoUsuario',  
 
     //ALUNOS
-    VerAlunos = 'verAlunos',            //Permissão para listar os alunos
-    CriarAlunos = 'criarAlunos',    //Permissão para criar usuários
-    DeletarAlunos = 'deletarAlunos',//Permissão para deletar usuários
-    EditarAlunos ='editarAlunos',  //Permissão para editar usuários
-    VerInfoAluno = 'verInfoAluno',  //Permissão para dar get em um usuário
+    VerAlunos = 'verAlunos',
+    CriarAlunos = 'criarAlunos',
+    DeletarAlunos = 'deletarAlunos',
+    EditarAlunos ='editarAlunos', 
+    VerInfoAluno = 'verInfoAluno',
 
     //TAREFAS
     CriarTarefas = 'criarTarefas',
@@ -29,38 +30,24 @@ export class Permissoes extends ValueObject<string[]> {
     private constructor(valor: string[]){
         super(valor)
     }
+    static criar(permissoes: string[]){
+        const resultado = Validador.combinar(
+        Validador.tamanhoMaximoArray(permissoes, Object.values(permissions).length, "Permissões"),
+    );
+    if (!resultado.valido) {
+        throw new Error(resultado.erro);
+    }
+    for(const permissao of permissoes){
+        if(!Object.values(permissions).includes(permissao) && permissao != '') throw new Error('Permissão inválida')
+    }
 
+    return new Permissoes(permissoes)
+    }
     static giveAllPermissoes(userPermissions : string[]){
         userPermissions.length = 0; 
-        userPermissions.push(...Object.values(Permissoes));
+        userPermissions.push(...Object.values(permissions));
     }
-
-    static comparePermissions(permissions : string[], userPermissions : string[]){
-       if(permissions.every(permissao => userPermissions.includes(permissao))){
-        return true
-       } else {
-        return false
-       }
+    static comparePermissions(permissions : string[], userPermissions : string[]): boolean{
+       return permissions.every(permissao => userPermissions.includes(permissao))
     }
-
-    static validatePermissions(permissions : string[]){
-        try{
-            permissionSchema.parse(permissions);
-        }catch(error){
-            throw new InvalidPermissoesError();
-        }
-        return permissions;
-    } 
-
-    static mudarPermissoes(permissions : string[], userPermissions : string[]){
-        try{
-            Permissoes.validatePermissions(permissions);
-        }catch(error){
-            throw new InvalidPermissoesError();
-
-        }
-        return userPermissions = permissions;
-    }
-
-    
 }
