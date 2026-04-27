@@ -3,6 +3,8 @@ import { Identifier } from "../../shared/domain/Identifier";
 import { Email } from "../../shared/domain/value-objects/Email";
 import { Nome } from "../../shared/domain/value-objects/Nome";
 import { criarEventoUsuarioCadastrado } from "./events/UsuarioCadastrado";
+import { TipoUsuario } from "./TipoUsuario";
+import { Senha } from "./value-objects/Senha";
 
 export class UserId extends Identifier {
     constructor(valor: string){
@@ -35,8 +37,10 @@ export class User extends AggregateRoot<UserId>{
         )
 
         user.adicionarEvento(
-            new criarEventoUsuarioCadastrado(user._id, user._email, )
+            criarEventoUsuarioCadastrado(user._id.valor, user._email.valor, TipoUsuario.ADMIN, user._nome.valor,)
         )
+
+        return user;
     }
 
     get email(): Email {

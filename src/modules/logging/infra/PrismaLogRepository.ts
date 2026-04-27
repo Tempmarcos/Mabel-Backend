@@ -11,7 +11,7 @@ export class PrismaLogRepository implements LogRepository {
         nomeEvento: log.nomeEvento,
         dataOcorrencia: log.dataOcorrencia,
         aggregateId: log.aggregateId,
-        dados: log.dados,
+        dados: JSON.stringify(log.dados),
         moduloOrigem: log.moduloOrigem,
         dataPersistencia: log.dataPersistencia
       }
@@ -56,11 +56,12 @@ export class PrismaLogRepository implements LogRepository {
 
   private mapearParaDominio(data: any): LogEvento {
     return LogEvento.criar(
+      data.id,
       data.nomeEvento,
       new Date(data.dataOcorrencia),
       data.aggregateId,
-      data.moduloOrigem,
       data.dados as Record<string, unknown>,
+      data.moduloOrigem,
     );
   }
 }

@@ -8,50 +8,82 @@ datasource db {
 }
 
 model Aluno {
-  id                String @id @default (uuid())
-  nome              String
-  dataNascimento    DateTime
-  rua               String
-  numero            String
-  bairro            String
-  cidade            String
-  estado            String
-  cep               String
-  complemento       String ?
-  ativo             Boolean @default (true)
-  dataMatricula     DateTime @default (now())
-  turmaId           String ?
-  planoId           String ?
-
-      // Responsáveis (JSON para flexibilidade)
-      pai               Json ?
-        mae               Json ?
-          responsavelFinanceiro Json
+  id             String   @id @default(uuid())
+  nome           String
+  dataNascimento DateTime
+  rua            String
+  numero         String
+  bairro         String
+  cidade         String
+  estado         String
+  cep            String
+  complemento    String?
+  ativo          Boolean  @default(true)
+  dataMatricula  DateTime @default(now())
+  turmaId        String?
+  planoId        String?
+  ficha          Ficha[]
+  chamada        Chamada?
+  chamadaId      String
 
   @@map("alunos")
 }
 
-model Usuario {
-  id            String @id @default (uuid())
-  email         String @unique
-  senhaHash     String
-  nomeCompleto  String
-  tipo          String   // ADMIN, COORDENADOR, PROFESSOR, etc.
-  ativo         Boolean @default (true)
-  dataCriacao   DateTime @default (now())
-  ultimoLogin   DateTime ?
+model Ficha {
+  id      String @id @default(uuid())
+  alunoId String
+  aluno   Aluno  @relation(fields: [alunoId], references: [id])
+}
 
-    @@map("usuarios")
+model Chamada {
+  id      String @id @default(uuid())
+  alunoId String @unique
+  aluno   Aluno  @relation(fields: [alunoId], references: [id])
+}
+
+model User {
+  id             String    @id @default(uuid())
+  admin          Boolean   @default(false)
+  nome           String
+  nomeDeUsuario  String?
+  fotoUrl        String?
+  email          String    @unique
+  senhaHash      String
+  tipo           String // ADMIN, COORDENADOR, PROFESSOR, etc.
+  ativo          Boolean   @default(true)
+  created_at     DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  ultimoLogin    DateTime?
+  vistoPorUltimo DateTime?
+  tarefas        Tarefa[]  @relation(name: "responsavel")
+  tarefasCriadas Tarefa[]  @relation(name: "criador")
+
+  @@map("usuarios")
+}
+
+model Tarefa {
+  id                String    @id @default(uuid())
+  nome              String
+  descricao         String?
+  userResponsavelId String
+  userCriadorId     String
+  responsavel       User      @relation("responsavel", fields: [userResponsavelId], references: [id], onDelete: Cascade)
+  criador           User      @relation("criador", fields: [userCriadorId], references: [id], onDelete: Cascade)
+  tipo              String
+  status            String
+  dataAgendada      DateTime?
+  dataExecutada     DateTime?
+  empresaId         String
 }
 
 model LogEvento {
-  id                String @id @default (uuid())
-  nomeEvento        String
-  dataOcorrencia    DateTime
-  aggregateId       String
-  dados             Json
-  moduloOrigem      String
-  dataPersistencia  DateTime @default (now())
+  id               String   @id @default(uuid())
+  nomeEvento       String
+  dataOcorrencia   DateTime
+  aggregateId      String
+  dados            Json
+  moduloOrigem     String
+  dataPersistencia DateTime @default(now())
 
   @@index([nomeEvento])
   @@index([aggregateId])
@@ -60,34 +92,40 @@ model LogEvento {
 }
 
 model Turma {
-  id          String @id @default (uuid())
-  nome        String
-  turno       String   // MANHA, TARDE
-  anoLetivo   Int
-  capacidade  Int
-  ativa       Boolean @default (true)
+  id         String  @id @default(uuid())
+  nome       String
+  turno      String // MANHA, TARDE
+  anoLetivo  Int
+  capacidade Int
+  ativa      Boolean @default(true)
 
   @@map("turmas")
 }
 
 model Professor {
-  id            String @id @default (uuid())
+  id            String  @id @default(uuid())
   nomeCompleto  String
-  email         String @unique
+  email         String  @unique
   telefone      String
-  especialidade String ?
-    ativo         Boolean @default (true)
+  especialidade String?
+  ativo         Boolean @default(true)
 
   @@map("professores")
 }
 
 model Plano {
-  id              String @id @default (uuid())
-  nome            String   // "Plano 3x Semana", "Plano 5x Semana"
-  descricao       String
-  frequenciaSemanal Int    // 3, 5, etc.
-  valorMensal     Decimal @db.Decimal(10, 2)
-  ativo           Boolean @default (true)
+  id                String  @id @default(uuid())
+  nome              String // "Plano 3x Semana", "Plano 5x Semana"
+  descricao         String
+  frequenciaSemanal Int // 3, 5, etc.
+  valorMensal       Decimal @db.Decimal(10, 2)
+  ativo             Boolean @default(true)
 
   @@map("planos")
+}
+
+enum Turno {
+  MANHA
+  TARDE
+  NOITE
 }

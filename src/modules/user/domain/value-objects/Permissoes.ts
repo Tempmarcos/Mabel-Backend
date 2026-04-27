@@ -38,6 +38,10 @@ export enum permissions  {
     CriarRegistro = 'criarRegistro',
     DeletarRegistro = 'deletarRegistro',
     EditarRegistro = 'editarRegistro',
+    AlterarTaxas = 'alterarTaxas',
+
+    //SISTEMA
+    VerLog = 'verLog'
 }
 
 export class Permissoes extends ValueObject<string[]> {
@@ -64,7 +68,7 @@ export class Permissoes extends ValueObject<string[]> {
        return this.valor.every(permissao => outra.valor.includes(permissao))
     }
     public possui(permissao: permissions): boolean {
-    return this.valor.includes(permissao);
+        return this.valor.includes(permissao);
     }
     public possuiAlgumaDe(outra: Permissoes): boolean {
         return outra.valor.some(p => this.valor.includes(p));
