@@ -8,37 +8,171 @@ datasource db {
 }
 
 model Aluno {
-  id             String   @id @default(uuid())
+  id             String    @id @default(uuid())
   nome           String
   dataNascimento DateTime
-  rua            String
-  numero         String
-  bairro         String
-  cidade         String
-  estado         String
-  cep            String
-  complemento    String?
-  ativo          Boolean  @default(true)
-  dataMatricula  DateTime @default(now())
-  turmaId        String?
-  planoId        String?
-  ficha          Ficha[]
-  chamada        Chamada?
-  chamadaId      String
+  ativo          Boolean   @default(true)
+  dataCadastro   DateTime  @default(now())
+  fichas         Ficha[]
+  chamada        Chamada[]
+  diarias        Diaria[]
+  vinculos       Vinculo[]
+  informacoes    String?
+  medicamentos   String?
+  religiao       String?
 
+  @@index([ativo])
   @@map("alunos")
 }
 
 model Ficha {
-  id      String @id @default(uuid())
-  alunoId String
-  aluno   Aluno  @relation(fields: [alunoId], references: [id])
+  id                      String                @id @default(uuid())
+  alunoId                 String
+  aluno                   Aluno                 @relation(fields: [alunoId], references: [id])
+  turmaId                 String
+  turma                   Turma                 @relation(fields: [turmaId], references: [id])
+  planoId                 String
+  plano                   Plano                 @relation(fields: [planoId], references: [id])
+  valor                   Float
+  descontoPercentual      Float?
+  descontoFixo            Float?
+  diasDaSemana            DiaSemana[]
+  responsavelFinanceiroId String
+  responsavelFinanceiro   ResponsavelFinanceiro @relation(fields: [responsavelFinanceiroId], references: [id])
+
+  rua         String
+  numero      String
+  bairro      String
+  cidade      String
+  estado      String
+  cep         String
+  complemento String?
+
+  serie      String
+  escola     String
+  dataInicio DateTime  @default(now())
+  dataFim    DateTime?
+
+  @@index([alunoId])
+  @@map("fichas")
 }
 
 model Chamada {
-  id      String @id @default(uuid())
-  alunoId String @unique
-  aluno   Aluno  @relation(fields: [alunoId], references: [id])
+  alunoId  String
+  aluno    Aluno    @relation(fields: [alunoId], references: [id])
+  turno    Turno
+  presenca Boolean
+  data     DateTime @db.Date
+
+  @@id([alunoId, data, turno], name: "chamada_pk")
+  @@map("chamadas")
+}
+
+model Diaria {
+  valor   Float
+  alunoId String
+  data    DateTime @db.Date
+  turno   Turno
+
+  aluno Aluno @relation(fields: [alunoId], references: [id])
+
+  @@id([alunoId, data, turno], name: "diaria_pk")
+  @@map("diarias")
+}
+
+enum Turno {
+  MANHA
+  TARDE
+  NOITE
+}
+
+enum DiaSemana {
+  SEGUNDA
+  TERCA
+  QUARTA
+  QUINTA
+  SEXTA
+  SABADO
+  DOMINGO
+}
+
+model Plano {
+  id                String  @id @default(uuid())
+  nome              String
+  descricao         String?
+  frequenciaSemanal Int
+  valor             Float
+  almoco            Boolean
+  fichas            Ficha[]
+
+  @@map("planos")
+}
+
+model Turma {
+  id          String   @id @default(uuid())
+  nome        String
+  turno       Turno
+  idadeMinima Float?
+  idadeMaxima Float?
+  capacidade  Int?
+  professorId String
+  professor   User     @relation(fields: [professorId], references: [id])
+  createdAt   DateTime @default(now())
+  fichas      Ficha[]
+
+  @@map("turmas")
+}
+
+model Vinculo {
+  alunoId           String
+  aluno             Aluno       @relation(fields: [alunoId], references: [id])
+  responsavelId     String
+  responsavel       Responsavel @relation(fields: [responsavelId], references: [id])
+  tipo              TipoVinculo
+  buscaAutorizada   Boolean
+  contatoEmergencia Boolean
+
+  @@id([alunoId, responsavelId], name: "vinculo_pk")
+  @@map("vinculos")
+}
+
+enum TipoVinculo {
+  PAI
+  MAE
+  PARENTE
+  CONHECIDO
+  TRANSPORTE
+}
+
+model Responsavel {
+  id               String                 @id @default(uuid())
+  nome             String
+  cpf              String                 @unique
+  email            String?
+  telefone         String?
+  trabalho         String?
+  funcao           String?
+  vinculos         Vinculo[]
+  dadosFinanceiros ResponsavelFinanceiro?
+
+  @@map("responsaveis")
+}
+
+model ResponsavelFinanceiro {
+  id              String      @id @default(uuid())
+  responsavelId   String      @unique
+  responsavel     Responsavel @relation(fields: [responsavelId], references: [id])
+  fichas          Ficha[]
+  rua             String
+  numero          String
+  bairro          String
+  cidade          String
+  estado          String
+  cep             String
+  complemento     String?
+  metodoPagamento String
+
+  @@map("responsaveis_financeiros")
 }
 
 model User {
@@ -49,7 +183,9 @@ model User {
   fotoUrl        String?
   email          String    @unique
   senhaHash      String
+  permissoes     String[]
   tipo           String // ADMIN, COORDENADOR, PROFESSOR, etc.
+  turmas         Turma[]
   ativo          Boolean   @default(true)
   created_at     DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -66,14 +202,17 @@ model Tarefa {
   nome              String
   descricao         String?
   userResponsavelId String
-  userCriadorId     String
   responsavel       User      @relation("responsavel", fields: [userResponsavelId], references: [id], onDelete: Cascade)
+  userCriadorId     String
   criador           User      @relation("criador", fields: [userCriadorId], references: [id], onDelete: Cascade)
   tipo              String
   status            String
   dataAgendada      DateTime?
   dataExecutada     DateTime?
-  empresaId         String
+
+  @@index([userResponsavelId])
+  @@index([userCriadorId])
+  @@map("tarefas")
 }
 
 model LogEvento {
@@ -89,43 +228,4 @@ model LogEvento {
   @@index([aggregateId])
   @@index([dataOcorrencia])
   @@map("logs_eventos")
-}
-
-model Turma {
-  id         String  @id @default(uuid())
-  nome       String
-  turno      String // MANHA, TARDE
-  anoLetivo  Int
-  capacidade Int
-  ativa      Boolean @default(true)
-
-  @@map("turmas")
-}
-
-model Professor {
-  id            String  @id @default(uuid())
-  nomeCompleto  String
-  email         String  @unique
-  telefone      String
-  especialidade String?
-  ativo         Boolean @default(true)
-
-  @@map("professores")
-}
-
-model Plano {
-  id                String  @id @default(uuid())
-  nome              String // "Plano 3x Semana", "Plano 5x Semana"
-  descricao         String
-  frequenciaSemanal Int // 3, 5, etc.
-  valorMensal       Decimal @db.Decimal(10, 2)
-  ativo             Boolean @default(true)
-
-  @@map("planos")
-}
-
-enum Turno {
-  MANHA
-  TARDE
-  NOITE
 }
