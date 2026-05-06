@@ -1,19 +1,18 @@
-import { Validador } from "../../../shared/domain/value-objects/Validador";
 import { ValueObject } from "../../../shared/domain/ValueObject";
 
-export enum permissions  {
+export enum permissions {
     //USERS
     VerUsuarios = 'verUsuarios',
     CriarUsuarios = 'criarUsuarios',
     DeletarUsuarios = 'deletarUsuarios',
-    EditarUsuarios ='editarUsuarios',
-    VerInfoUsuario = 'verInfoUsuario',  
+    EditarUsuarios = 'editarUsuarios',
+    VerInfoUsuario = 'verInfoUsuario',
 
     //ALUNOS
     VerAlunos = 'verAlunos',
     CriarAlunos = 'criarAlunos',
     DeletarAlunos = 'deletarAlunos',
-    EditarAlunos ='editarAlunos', 
+    EditarAlunos = 'editarAlunos',
     VerInfoAluno = 'verInfoAluno',
 
     //TAREFAS
@@ -23,14 +22,14 @@ export enum permissions  {
     VerTurmas = 'verTurmas',
     CriarTurmas = 'criarTurmas',
     DeletarTurmas = 'deletarTurmas',
-    EditarTurmas ='editarTurmas',
+    EditarTurmas = 'editarTurmas',
     FazerChamada = 'fazerChamada',
 
     //FUNCIONARIOS
     VerFuncionarios = 'verFuncionarios',
     CriarFuncionarios = 'criarFuncionarios',
     DeletarFuncionarios = 'deletarFuncionarios',
-    EditarFuncionarios ='editarFuncionarios', 
+    EditarFuncionarios = 'editarFuncionarios',
     VerInfoFuncionario = 'verInfoFuncionario',
 
     //FINANCEIRO
@@ -45,29 +44,27 @@ export enum permissions  {
 }
 
 export class Permissoes extends ValueObject<string[]> {
-    private constructor(valor: string[]){
+    private constructor(valor: string[]) {
         super(valor)
     }
-    static criar(permissoes: permissions[]){
-        const resultado = Validador.combinar(
-            Validador.tamanhoMaximoArray(permissoes, Object.values(permissions).length, "Permissões"),
-        );
-        if (!resultado.valido) {
-            throw new Error(resultado.erro);
-        }
-        for(const permissao of permissoes){
-            if(!Object.values(permissions).includes(permissao)) throw new Error('Permissão inválida')
+    static criar(permissoes: string[]): Permissoes {
+        const permissoesUnicas = [...new Set(permissoes)];
+
+        for (const permissao of permissoesUnicas) {
+            if (!Object.values(permissions).includes(permissao as permissions)) {
+                throw new Error('Permissão inválida');
+            }
         }
 
-        return new Permissoes([...new Set(permissoes)])
+        return new Permissoes(permissoesUnicas);
     }
     static todasAsPermissoes(): Permissoes {
         return new Permissoes([...Object.values(permissions)]);
     }
-    public possuiTodasDe(outra: Permissoes): boolean{
-       return this.valor.every(permissao => outra.valor.includes(permissao))
+    public possuiTodasDe(outra: Permissoes): boolean {
+        return outra.valor.every(p => this.valor.includes(p));
     }
-    public possui(permissao: permissions): boolean {
+    public possui(permissao: string): boolean {
         return this.valor.includes(permissao);
     }
     public possuiAlgumaDe(outra: Permissoes): boolean {
