@@ -10,6 +10,7 @@ export abstract class Identifier {
   }
 
   equals(id: Identifier): boolean {
+    if (!id) return false
     return this._valor === id.valor;
   }
 

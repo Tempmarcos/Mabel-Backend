@@ -7,7 +7,7 @@ import { TipoUsuario } from "./TipoUsuario";
 import { Senha } from "./value-objects/Senha";
 
 export class UserId extends Identifier {
-    constructor(valor: string){
+    constructor(valor: string) {
         super(valor);
     }
 }
@@ -18,36 +18,33 @@ interface UserProps {
 
 }
 
-export class User extends AggregateRoot<UserId>{
-    private readonly _email: Email;
-    private readonly _nome: Nome;
-
-    private constructor(id: UserId, props: UserProps){
+export class User extends AggregateRoot<UserId, UserProps> {
+    private constructor(id: UserId, props: UserProps) {
         super(id, props)
-        this._email = props.email;
-        this._nome = props.nome;
     }
 
-    static criar(id: string, emailString: string, nomeString: string){
-        const email = Email.criar(emailString);
-        const nome = Nome.criar(nomeString);
+    static criar(id: string, emailString: string, nomeString: string) {
         const user = new User(
             new UserId(id),
-            {email, nome}
+            { email: Email.criar(emailString), nome: Nome.criar(nomeString) }
         )
 
         user.adicionarEvento(
-            criarEventoUsuarioCadastrado(user._id.valor, user._email.valor, TipoUsuario.ADMIN, user._nome.valor,)
+            criarEventoUsuarioCadastrado(
+                user._id.valor,
+                user.props.email.valor,
+                TipoUsuario.ADMIN,
+                user.props.nome.valor,)
         )
 
         return user;
     }
 
     get email(): Email {
-        return this._email;
+        return this.props.email;
     }
-    
+
     get nome(): Nome {
-        return this._nome;
+        return this.props.nome;
     }
 }

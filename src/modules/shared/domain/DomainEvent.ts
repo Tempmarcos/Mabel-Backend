@@ -1,6 +1,8 @@
+import { readonly } from "zod";
+
 export interface DomainEvent {
-  nomeEvento: string;
-  dataOcorrencia: Date;
-  dados: Record<string, unknown>;
-  aggregateId: string;
+  readonly nomeEvento: string;
+  readonly dataOcorrencia: Date;
+  readonly dados: Record<string, unknown>;
+  readonly aggregateId: string;
 }
