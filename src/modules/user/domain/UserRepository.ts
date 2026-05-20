@@ -1,6 +1,6 @@
 import { User, UserId } from "./User";
 
-export interface UsuarioRepository {
+export interface UserRepository {
   salvar(usuario: User): Promise<void>;
   buscarPorId(id: UserId): Promise<User | null>;
   buscarPorEmail(email: string): Promise<User | null>;

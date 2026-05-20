@@ -1,5 +1,4 @@
 import { DomainEvent } from "../../../shared/domain/DomainEvent";
-import { TipoUsuario } from "../TipoUsuario";
 import { UserEventType } from "./EventTypes";
 
 export interface UsuarioCadastradoEvent extends DomainEvent {
@@ -7,7 +6,6 @@ export interface UsuarioCadastradoEvent extends DomainEvent {
   dados: {
     usuarioId: string;
     email: string;
-    tipo: TipoUsuario;
     nome: string;
   };
 }
@@ -15,8 +13,7 @@ export interface UsuarioCadastradoEvent extends DomainEvent {
 export function criarEventoUsuarioCadastrado(
   usuarioId: string,
   email: string,
-  tipo: TipoUsuario,
-  nome: string
+  nome: string,
 ): UsuarioCadastradoEvent {
   return {
     nomeEvento: UserEventType.USUARIO_CADASTRADO,
@@ -25,7 +22,6 @@ export function criarEventoUsuarioCadastrado(
     dados: {
       usuarioId,
       email,
-      tipo,
       nome
     }
   };

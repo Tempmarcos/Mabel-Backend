@@ -1,5 +1,5 @@
 export abstract class ValueObject<T> {
-    protected constructor(protected readonly _props: T){}
+    protected constructor(protected readonly _props: Readonly<T>) { }
 
     get valor(): T {
         return this._props;
@@ -12,7 +12,7 @@ export abstract class ValueObject<T> {
     }
 
     toString(): string {
-    if (
+        if (
             typeof this._props === 'string' ||
             typeof this._props === 'number' ||
             typeof this._props === 'boolean'
