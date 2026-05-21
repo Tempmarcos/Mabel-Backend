@@ -18,6 +18,7 @@ export function criarEventoSenhaAlterada(
     return {
         nomeEvento: UserEventType.SENHA_ALTERADA,
         dataOcorrencia: new Date(),
+        moduloOrigem: 'USER',
         aggregateId: usuarioId,
         dados: {
             usuarioId,

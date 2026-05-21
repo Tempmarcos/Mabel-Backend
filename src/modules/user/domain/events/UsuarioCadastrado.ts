@@ -18,6 +18,7 @@ export function criarEventoUsuarioCadastrado(
   return {
     nomeEvento: UserEventType.USUARIO_CADASTRADO,
     dataOcorrencia: new Date(),
+    moduloOrigem: 'USER',
     aggregateId: usuarioId,
     dados: {
       usuarioId,

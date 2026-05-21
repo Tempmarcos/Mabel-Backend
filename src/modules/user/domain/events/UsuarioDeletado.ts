@@ -19,6 +19,7 @@ export function criarEventoUsuarioDeletado(
   return {
     nomeEvento: UserEventType.USUARIO_DELETADO,
     dataOcorrencia: new Date(),
+    moduloOrigem: 'USER',
     aggregateId: usuarioId,
     dados: {
       usuarioId,

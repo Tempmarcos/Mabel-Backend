@@ -19,6 +19,7 @@ export function criarEventoUsuarioLogado(
   return {
     nomeEvento: UserEventType.USUARIO_LOGADO,
     dataOcorrencia: new Date(),
+    moduloOrigem: 'USER',
     aggregateId: usuarioId,
     dados: {
       usuarioId,

@@ -18,6 +18,7 @@ export function criarEventoAdminCadastrado(
     return {
         nomeEvento: UserEventType.ADMIN_CADASTRADO,
         dataOcorrencia: new Date(),
+        moduloOrigem: 'USER',
         aggregateId: usuarioId,
         dados: {
             usuarioId,

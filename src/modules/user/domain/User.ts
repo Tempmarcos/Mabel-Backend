@@ -37,6 +37,18 @@ export class User extends AggregateRoot<UserId, UserProps> {
         return this.props.nome;
     }
 
+    get admin(): boolean {
+        return this.props.admin;
+    }
+
+    get permissoes(): Permissoes {
+        return this.props.permissoes
+    }
+
+    get senhaHash(): SenhaHash {
+        return this.props.senhaHash
+    }
+
     static criar(id: string, emailString: string, nomeString: string,
         senhaHashString: string, permissoesArray: string[], admin: boolean) {
         const user = new User(
@@ -78,7 +90,6 @@ export class User extends AggregateRoot<UserId, UserProps> {
                 admin
             }
         )
-
         return user;
     }
 

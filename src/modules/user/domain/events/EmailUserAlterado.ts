@@ -20,6 +20,7 @@ export function criarEventoEmailUserAlterado(
     return {
         nomeEvento: UserEventType.EMAIL_USER_ALTERADO,
         dataOcorrencia: new Date(),
+        moduloOrigem: 'USER',
         aggregateId: usuarioId,
         dados: {
             usuarioId,
