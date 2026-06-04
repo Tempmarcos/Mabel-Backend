@@ -230,20 +230,24 @@ model LogEvento {
 }
 
 model Outbox {
-  id           String       @id @default(uuid())
-  nomeEvento   String
-  aggregateId  String
-  moduloOrigem String
-  dados        Json
-  status       OutboxStatus @default(PENDING)
-  retries      Int          @default(0)
-  createdAt    DateTime     @default(now())
-  processedAt  DateTime?
-  lockedAt     DateTime?
-  error        String?
+  id               String       @id @default(uuid())
+  nomeEvento       String
+  dataOcorrencia   DateTime
+  aggregateId      String
+  dados            Json
+  moduloOrigem     String
+  dataPersistencia DateTime     @default(now())
+  status           OutboxStatus @default(PENDING)
+  retries          Int          @default(0)
+  processedAt      DateTime?
+  lockedAt         DateTime?
+  lockedBy         String?
+  error            String?
+  dlqAt            DateTime?
 
-  @@index([status, createdAt])
+  @@index([status, dataPersistencia])
   @@index([lockedAt])
+  @@index([dlqAt])
   @@map("outbox")
 }
 
@@ -252,4 +256,37 @@ enum OutboxStatus {
   PROCESSING
   PROCESSED
   FAILED
+  DLQ
+}
+
+model EventoProcessado {
+  id          String   @id @default(uuid())
+  eventId     String // ← ID do evento (vem do broker/outbox)
+  handlerName String // ← nome da classe/função handler
+  processedAt DateTime @default(now())
+  checksum    String? // ← hash dos dados (detecta replay com payload diferente)
+
+  @@unique([eventId, handlerName])
+  @@index([processedAt]) // ← para limpeza periódica
+  @@map("eventos_processados")
+}
+
+model DeadLetter {
+  id             String    @id @default(uuid())
+  outboxId       String // ← referência ao original
+  nomeEvento     String
+  aggregateId    String
+  dados          Json
+  dataOcorrencia DateTime
+  moduloOrigem   String
+  errorHistory   Json // ← array com todos os erros de retry
+  failedAt       DateTime  @default(now())
+  retriesTotal   Int
+  reprocessado   Boolean   @default(false)
+  reprocessadoAt DateTime?
+
+  @@index([nomeEvento])
+  @@index([aggregateId])
+  @@index([failedAt])
+  @@map("dead_letters")
 }

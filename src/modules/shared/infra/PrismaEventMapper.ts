@@ -17,6 +17,7 @@ export class PrismaEventMapper {
             nomeEvento: event.nomeEvento,
             aggregateId: event.aggregateId,
             dados: event.dados as Prisma.InputJsonValue,
+            dataOcorrencia: event.dataOcorrencia,
             moduloOrigem: event.moduloOrigem
         };
     }

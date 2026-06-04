@@ -8,7 +8,8 @@ export class EventLoggerHandler implements EventHandler {
   constructor(
     private logRepository: LogRepository,
     private moduloOrigem: string,
-    private idGenerator: IdGenerator
+    private idGenerator: IdGenerator,
+    readonly handlerName: string = 'LoggerHandler'
   ) { }
 
   async handle(evento: DomainEvent): Promise<void> {
@@ -18,7 +19,7 @@ export class EventLoggerHandler implements EventHandler {
       evento.dataOcorrencia,
       evento.aggregateId,
       evento.dados,
-      this.moduloOrigem
+      this.moduloOrigem,
     );
 
     await this.logRepository.salvar(log);

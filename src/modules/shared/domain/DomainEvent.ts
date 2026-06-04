@@ -1,4 +1,5 @@
 export interface DomainEvent {
+  readonly id?: string;
   readonly nomeEvento: string;
   readonly moduloOrigem: string;
   readonly dataOcorrencia: Date;
