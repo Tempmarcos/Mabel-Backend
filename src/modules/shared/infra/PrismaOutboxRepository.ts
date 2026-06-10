@@ -1,11 +1,12 @@
-import prisma from "../../../../prisma/PrismaClient";
-import { Prisma } from "../../../generated/prisma/client";
+import { Prisma, PrismaClient } from "../../../generated/prisma/client";
 import { OutboxInput, OutboxMessage, OutboxRepository } from "../application/OutboxRepository";
 
 export class PrismaOutboxRepository implements OutboxRepository {
+    constructor(private prisma: PrismaClient) { }
+
     async claimPendentes(limite: number): Promise<OutboxMessage[]> {
         // Usa transação para evitar race condition entre workers
-        return prisma.$transaction(async (tx) => {
+        return this.prisma.$transaction(async (tx) => {
             // Pega os mais antigos que estão PENDING
             const pendentes = await tx.outbox.findMany({
                 where: { status: 'PENDING' },
@@ -35,7 +36,7 @@ export class PrismaOutboxRepository implements OutboxRepository {
     }
 
     async marcarProcessado(id: string): Promise<void> {
-        await prisma.outbox.update({
+        await this.prisma.outbox.update({
             where: { id },
             data: {
                 status: 'PROCESSED',
@@ -45,7 +46,7 @@ export class PrismaOutboxRepository implements OutboxRepository {
     }
 
     async incrementarRetry(id: string, erro: string): Promise<void> {
-        await prisma.outbox.update({
+        await this.prisma.outbox.update({
             where: { id },
             data: {
                 status: 'PENDING',        // Volta pra fila
@@ -57,7 +58,7 @@ export class PrismaOutboxRepository implements OutboxRepository {
     }
 
     async inserir(mensagem: OutboxInput): Promise<void> {
-        await prisma.outbox.create({
+        await this.prisma.outbox.create({
             data: {
                 id: mensagem.id,
                 nomeEvento: mensagem.nomeEvento,
