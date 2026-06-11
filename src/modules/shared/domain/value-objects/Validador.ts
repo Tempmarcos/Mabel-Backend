@@ -67,6 +67,17 @@ export class Validador {
     return { valido: true };
   }
 
+  static periodoData(dataInicio: Date, dataFim: Date, data: Date, campo: string): ValidationResult {
+
+  }
+
+  static dataPassada(data: Date, campo: string): ValidationResult {
+    if (data >= new Date()) {
+      return { valido: false, erro: `${campo} deve ser uma data passada` };
+    }
+    return { valido: true };
+  }
+
   // ----- Composição -----
   static combinar(...resultados: ValidationResult[]): ValidationResult {
     const primeiroErro = resultados.find(r => !r.valido);
