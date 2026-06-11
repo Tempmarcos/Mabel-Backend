@@ -50,11 +50,33 @@ model Ficha {
 
   serie      String
   escola     String
-  dataInicio DateTime  @default(now())
+  dataInicio DateTime        @default(now())
   dataFim    DateTime?
+  materiais  MaterialFicha[]
 
   @@index([alunoId])
   @@map("fichas")
+}
+
+model MaterialFicha {
+  id String @id @default(uuid())
+
+  fichaId String
+  ficha   Ficha  @relation(fields: [fichaId], references: [id])
+
+  nome      String
+  descricao String?
+
+  quantidadeEsperada Int
+
+  quantidadeEntregue Int @default(0)
+
+  observacao String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("materiais_ficha")
 }
 
 model Chamada {
@@ -109,18 +131,36 @@ model Plano {
 }
 
 model Turma {
-  id          String   @id @default(uuid())
+  id          String          @id @default(uuid())
   nome        String
   turno       Turno
   idadeMinima Float?
   idadeMaxima Float?
   capacidade  Int?
   professorId String
-  professor   User     @relation(fields: [professorId], references: [id])
-  createdAt   DateTime @default(now())
+  professor   User            @relation(fields: [professorId], references: [id])
+  createdAt   DateTime        @default(now())
   fichas      Ficha[]
+  materiais   MaterialTurma[]
 
   @@map("turmas")
+}
+
+model MaterialTurma {
+  id String @id @default(uuid())
+
+  turmaId String
+  turma   Turma  @relation(fields: [turmaId], references: [id])
+
+  nome      String
+  descricao String?
+
+  quantidade Int?
+
+  createdAt DateTime @default(now())
+
+  @@index([turmaId])
+  @@map("materiais_turma")
 }
 
 model Vinculo {

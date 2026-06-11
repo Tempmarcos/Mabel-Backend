@@ -60,24 +60,70 @@ export class Validador {
   }
 
   // ----- Datas -----
-  static dataFutura(data: Date, campo: string): ValidationResult {
-    if (data <= new Date()) {
-      return { valido: false, erro: `${campo} deve ser uma data futura` };
-    }
-    return { valido: true };
+
+  static dataValida(data: Date): boolean {
+    return data instanceof Date && !isNaN(data.getTime());
   }
 
-  static periodoData(dataInicio: Date, dataFim: Date, data: Date, campo: string): ValidationResult {
+  private static apenasData(data: Date): number {
+    const d = new Date(data);
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
 
+  static dataFutura(data: Date, campo: string): ValidationResult {
+    if (!this.dataValida(data)) {
+      return { valido: false, erro: `${campo} deve conter uma data válida` };
+    }
+
+    if (this.apenasData(data) <= this.apenasData(new Date())) {
+      return { valido: false, erro: `${campo} deve ser uma data futura` };
+    }
+
+    return { valido: true };
   }
 
   static dataPassada(data: Date, campo: string): ValidationResult {
-    if (data >= new Date()) {
+    if (!this.dataValida(data)) {
+      return { valido: false, erro: `${campo} deve conter uma data válida` };
+    }
+
+    if (this.apenasData(data) >= this.apenasData(new Date())) {
       return { valido: false, erro: `${campo} deve ser uma data passada` };
     }
+
     return { valido: true };
   }
 
+  static periodoData(
+    dataInicio: Date,
+    dataFim: Date,
+    data: Date,
+    campo: string
+  ): ValidationResult {
+
+    if (
+      !this.dataValida(data) ||
+      !this.dataValida(dataInicio) ||
+      !this.dataValida(dataFim)
+    ) {
+      return {
+        valido: false,
+        erro: "Período contém datas inválidas"
+      };
+    }
+
+    if (this.apenasData(data) < this.apenasData(dataInicio)
+      || this.apenasData(data) > this.apenasData(dataFim)) {
+      return {
+        valido: false,
+        erro: `${campo} deve estar entre ${dataInicio.toLocaleDateString()} 
+        e ${dataFim.toLocaleDateString()}`
+      };
+    }
+
+    return { valido: true };
+  }
   // ----- Composição -----
   static combinar(...resultados: ValidationResult[]): ValidationResult {
     const primeiroErro = resultados.find(r => !r.valido);
