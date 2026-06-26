@@ -54,6 +54,8 @@ export async function createTestDatabase(): Promise<TestDatabase> {
         TRUNCATE TABLE outbox CASCADE;
         TRUNCATE TABLE eventos_processados CASCADE;
         TRUNCATE TABLE dead_letters CASCADE;
+        TRUNCATE TABLE materiais_ficha CASCADE;
+        TRUNCATE TABLE materiais_turma CASCADE;
       `);
     },
     async close() {

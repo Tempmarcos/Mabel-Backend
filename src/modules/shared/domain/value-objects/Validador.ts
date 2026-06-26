@@ -59,6 +59,20 @@ export class Validador {
     return { valido: true };
   }
 
+  static menorQue(valor: number, max: number, campo: string): ValidationResult {
+    if (valor >= max) {
+      return { valido: false, erro: `${campo} deve ser menor que ${max}` };
+    }
+    return { valido: true };
+  }
+
+  static maiorQue(valor: number, min: number, campo: string): ValidationResult {
+    if (valor <= min) {
+      return { valido: false, erro: `${campo} deve ser maior que ${min}` };
+    }
+    return { valido: true };
+  }
+
   // ----- Datas -----
 
   static dataValida(data: Date): boolean {
