@@ -46,7 +46,7 @@ export const DDDS: Record<string, DddInfo> = {
         regiao: "Araçatuba/Assis/Birigui/Presidente Prudente"
     },
     "19": {
-        ddd: "13",
+        ddd: "19",
         estados: ["SP"],
         regiao: "Americana/Araras/Campinas/Indaiatuba/Limeira/Piracicaba/Rio Claro/Santa Bárbara D'Oeste/São João da Boa Vista/Sumaré"
     },
@@ -66,12 +66,12 @@ export const DDDS: Record<string, DddInfo> = {
         regiao: "Angra dos Reis/Petrópolis/Volta Redonda/Piraí"
     },
     "27": {
-        ddd: "21",
+        ddd: "27",
         estados: ["ES"],
         regiao: "Vitória e Região Metropolitana/Colatina/Linhares/Santa Maria de Jetibá"
     },
     "28": {
-        ddd: "21",
+        ddd: "28",
         estados: ["ES"],
         regiao: "Cachoeiro de Itapemirim/Castelo/Itapemirim/Marataízes"
     },
@@ -131,7 +131,7 @@ export const DDDS: Record<string, DddInfo> = {
         regiao: "Maringá/Campo Mourão/Umuarama"
     },
     "45": {
-        ddd: "41",
+        ddd: "45",
         estados: ["PR"],
         regiao: "Cascavel/Foz do Iguaçu"
     },

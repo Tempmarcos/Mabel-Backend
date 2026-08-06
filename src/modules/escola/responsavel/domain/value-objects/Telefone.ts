@@ -1,6 +1,6 @@
 import { Validador } from "../../../../shared/domain/value-objects/Validador";
 import { ValueObject } from "../../../../shared/domain/ValueObject";
-import { DDDS } from "./ddd";
+import { DddInfo, DDDS } from "./ddd";
 
 export class Telefone extends ValueObject<string> {
     private constructor(value: string) {
@@ -22,7 +22,20 @@ export class Telefone extends ValueObject<string> {
 
         const ddd = telefone.substring(0, 2);
 
-        //comparar ddd com a lista de ddd e 
+        const infoDdd = DDDS[ddd];
+
+        if (!infoDdd) {
+            throw new Error(`DDD ${ddd} inválido.`);
+        }
+
+        const primeiroDigito = telefone[2];
+
+        if (
+            (telefone.length === 11 && primeiroDigito !== '9') ||
+            (telefone.length === 10 && !['2', '3', '4', '5'].includes(primeiroDigito!))
+        ) {
+            throw new Error('Formato de telefone inválido.');
+        }
 
         return new Telefone(telefone);
     }
@@ -32,12 +45,20 @@ export class Telefone extends ValueObject<string> {
         return this.valor.substring(0, 2);
     }
 
-    get infoDdd() {
-        return DDDS[this.ddd];
+    get infoDdd(): DddInfo {
+        return DDDS[this.ddd]!;
     }
 
     get estado() {
         return this.infoDdd.estados;
+    }
+
+    get formatado() {
+        if (this.valor.length === 11) {
+            return `(${this.ddd}) ${this.valor.substring(2, 7)}-${this.valor.substring(7)}`;
+        }
+
+        return `(${this.ddd}) ${this.valor.substring(2, 6)}-${this.valor.substring(6)}`;
     }
 
     get regiao() {
