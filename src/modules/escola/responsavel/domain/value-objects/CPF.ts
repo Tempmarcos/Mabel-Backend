@@ -5,7 +5,7 @@ export class CPF extends ValueObject<string> {
         super(valor)
     }
 
-    static create(cpfString: string) {
+    static criar(cpfString: string) {
         const cpf = cpfString.replace(/[^\d]+/g, '');
 
         if (!this.validarCPF(cpf)) throw new Error('Insira um CPF válido')

@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { Telefone } from "../domain/value-objects/Telefone";
-import { DddInfo } from "../domain/value-objects/ddd";
 
 describe('Telefone - Validação', () => {
     it('deve criar e normalizar um telefone válido', () => {
