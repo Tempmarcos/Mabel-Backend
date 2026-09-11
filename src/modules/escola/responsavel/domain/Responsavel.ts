@@ -20,7 +20,6 @@ interface ResponsavelProps {
     funcao?: string
 }
 
-
 export class Responsavel extends AggregateRoot<ResponsavelId, ResponsavelProps> {
     private constructor(id: ResponsavelId, props: ResponsavelProps) {
         super(id, props);
@@ -58,7 +57,7 @@ export class Responsavel extends AggregateRoot<ResponsavelId, ResponsavelProps> 
             new ResponsavelId(id),
             {
                 nome: Nome.criar(nomeString),
-                cpf: CPF.criar(cpfString),        // valida dígitos verificadores
+                cpf: CPF.criar(cpfString),
                 ...(emailString && { email: Email.criar(emailString) }),
                 ...(telefoneString && { telefone: Telefone.criar(telefoneString) }),
                 ...(trabalho && { trabalho }),
@@ -68,6 +67,30 @@ export class Responsavel extends AggregateRoot<ResponsavelId, ResponsavelProps> 
 
         responsavel.adicionarEvento(
             criarEventoResponsavelCadastrado(responsavel._id.valor)
+        );
+
+        return responsavel;
+    }
+
+    static restaurar(
+        id: string,
+        nomeString: string,
+        cpfString: string,
+        emailString?: string,
+        telefoneString?: string,
+        trabalho?: string,
+        funcao?: string
+    ): Responsavel {
+        const responsavel = new Responsavel(
+            new ResponsavelId(id),
+            {
+                nome: Nome.criar(nomeString),
+                cpf: CPF.criar(cpfString),
+                ...(emailString && { email: Email.criar(emailString) }),
+                ...(telefoneString && { telefone: Telefone.criar(telefoneString) }),
+                ...(trabalho && { trabalho }),
+                ...(funcao && { funcao })
+            }
         );
 
         return responsavel;

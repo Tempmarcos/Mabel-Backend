@@ -5,14 +5,16 @@ import { DataNascimento } from "./value-objects/DataNascimento";
 import { Informacoes } from "./value-objects/Informacoes";
 import { Medicamentos } from "./value-objects/Medicamentos";
 import { Religiao } from "./value-objects/Religiao";
+import { TipoVinculo, Vinculo } from "./value-objects/Vinculo";
 
 interface AlunoProps {
     nome: Nome,
     dataNascimento: DataNascimento,
-    informacoes: Informacoes,
-    medicamentos: Medicamentos,
-    religiao: Religiao,
+    informacoes?: Informacoes,
+    medicamentos?: Medicamentos,
+    religiao?: Religiao,
     ativo: boolean,
+    vinculos: Vinculo[]
 }
 
 export class AlunoId extends Identifier {
@@ -38,16 +40,20 @@ export class Aluno extends AggregateRoot<AlunoId, AlunoProps> {
         return this.props.dataNascimento
     }
 
-    get informacoes(): Informacoes {
+    get informacoes(): Informacoes | undefined {
         return this.props.informacoes
     }
 
-    get religiao(): Religiao {
+    get religiao(): Religiao | undefined {
         return this.props.religiao
     }
 
-    get medicamentos(): Medicamentos {
+    get medicamentos(): Medicamentos | undefined {
         return this.props.medicamentos
+    }
+
+    get vinculos(): Vinculo[] {
+        return [...this.props.vinculos];
     }
 
     static criar(id: string, nomeString: string, dataNascimentoDate: Date,
@@ -61,7 +67,8 @@ export class Aluno extends AggregateRoot<AlunoId, AlunoProps> {
                 informacoes: Informacoes.criar(informacoesString),
                 medicamentos: Medicamentos.criar(medicamentosString),
                 religiao: Religiao.criar(religiaoString),
-                ativo
+                ativo,
+                vinculos: [],
             }
         )
 
@@ -93,10 +100,82 @@ export class Aluno extends AggregateRoot<AlunoId, AlunoProps> {
                 informacoes: Informacoes.criar(informacoesString),
                 medicamentos: Medicamentos.criar(medicamentosString),
                 religiao: Religiao.criar(religiaoString),
-                ativo
+                ativo,
+                vinculos: 
             }
         )
         return aluno;
+    }
+
+    vincularResponsavel(
+        responsavelId: string,
+        tipo: string,
+        buscaAutorizada: boolean,
+        contatoEmergencia: boolean
+    ): void {
+        // Invariante: não pode vincular o mesmo responsável 2x
+        const jaExiste = this.props.vinculos.some(
+            v => v.responsavelId.valor === responsavelId
+        );
+        if (jaExiste) {
+            throw new Error('Responsável já vinculado a este aluno');
+        }
+
+        // Invariante: só pode ter um PAI e uma MÃE
+        const tipoEnum = tipo as TipoVinculo;
+        if (tipoEnum === TipoVinculo.PAI || tipoEnum === TipoVinculo.MAE) {
+            const jaTem = this.props.vinculos.some(v => v.tipo === tipoEnum);
+            if (jaTem) {
+                throw new Error(`Aluno já possui ${tipoEnum.toLowerCase()} vinculado`);
+            }
+        }
+
+        const vinculo = Vinculo.criar(
+            responsavelId, tipo, buscaAutorizada, contatoEmergencia
+        );
+
+        this.props.vinculos.push(vinculo);
+
+        this.adicionarEvento(
+            criarEventoResponsavelVinculado(
+                this._id.valor,
+                responsavelId,
+                tipo
+            )
+        );
+    }
+
+    desvincularResponsavel(responsavelId: string): void {
+        const index = this.props.vinculos.findIndex(
+            v => v.responsavelId.valor === responsavelId
+        );
+        if (index === -1) {
+            throw new Error('Responsável não vinculado a este aluno');
+        }
+
+        this.props.vinculos.splice(index, 1);
+
+        this.adicionarEvento(
+            criarEventoResponsavelDesvinculado(this._id.valor, responsavelId)
+        );
+    }
+
+    atualizarPermissoesVinculo(
+        responsavelId: string,
+        buscaAutorizada: boolean,
+        contatoEmergencia: boolean
+    ): void {
+        const index = this.props.vinculos.findIndex(
+            v => v.responsavelId.valor === responsavelId
+        );
+        if (index === -1) throw new Error('Vínculo não encontrado');
+
+        this.props.vinculos[index] = Vinculo.criar(
+            responsavelId,
+            this.props.vinculos[index].tipo,
+            buscaAutorizada,
+            contatoEmergencia
+        );
     }
 
     desativar() {
