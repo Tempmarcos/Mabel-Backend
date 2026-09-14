@@ -1,6 +1,6 @@
 import { AggregateRoot } from "../../../shared/domain/AggregateRoot";
 import { Identifier } from "../../../shared/domain/Identifier";
-import { Endereco } from "../../../shared/domain/value-objects/Endereco";
+import { Endereco, EnderecoInput } from "../../../shared/domain/value-objects/Endereco";
 
 export class ResponsavelFinanceiroId extends Identifier {
     constructor(valor: string) {
@@ -26,13 +26,12 @@ export class ResponsavelFinanceiro extends AggregateRoot<ResponsavelFinanceiroId
         return this.props.metodoPagamento;
     }
 
-    static criar(id: string, metodoPagamento: string, rua: string, estado: string,
-        bairro: string, cidade: string, cep: string, numero: string, complemento?: string
+    static criar(id: string, metodoPagamento: string, endereco: EnderecoInput
     ): ResponsavelFinanceiro {
         const responsavelFinanceiro = new ResponsavelFinanceiro(
             new ResponsavelFinanceiroId(id),
             {
-                endereco: Endereco.criar(rua, bairro, cidade, estado, cep, numero, complemento),
+                endereco: Endereco.criar(endereco),
                 metodoPagamento
             }
         );
@@ -45,17 +44,50 @@ export class ResponsavelFinanceiro extends AggregateRoot<ResponsavelFinanceiroId
     }
 
     static restaurar(
-        id: string, metodoPagamento: string, rua: string, estado: string,
-        bairro: string, cidade: string, cep: string, complemento?: string
+        id: string, metodoPagamento: string, endereco: EnderecoInput
     ): ResponsavelFinanceiro {
-        const responsavel = new ResponsavelFinanceiro(
+        const responsavelFinanceiro = new ResponsavelFinanceiro(
             new ResponsavelFinanceiroId(id),
             {
-                endereco: Endereco.criar(rua, bairro, cidade, estado, cep, complemento),
+                endereco: Endereco.criar(endereco),
                 metodoPagamento
             }
         );
 
-        return responsavel;
+        return responsavelFinanceiro;
+    }
+
+    alterarEndereco(enderecoNovo: EnderecoInput): void {
+        const enderecoAnterior = this.props.endereco;
+
+        const novoEndereco = Endereco.criar(enderecoNovo);
+
+        this.props.endereco = novoEndereco;
+
+        this.adicionarEvento(
+            criarEventoEnderecoResponsavelFinanceiroAlterado(
+                this._id.valor,
+                enderecoAnterior,
+                novoEndereco
+            )
+        );
+    }
+
+    alterarMetodoPagamento(metodoPagamento: string): void {
+        if (this.props.metodoPagamento === metodoPagamento) {
+            return;
+        }
+
+        const metodoAnterior = this.props.metodoPagamento;
+
+        this.props.metodoPagamento = metodoPagamento;
+
+        this.adicionarEvento(
+            criarEventoMetodoPagamentoResponsavelFinanceiroAlterado(
+                this._id.valor,
+                metodoAnterior,
+                metodoPagamento
+            )
+        );
     }
 }
