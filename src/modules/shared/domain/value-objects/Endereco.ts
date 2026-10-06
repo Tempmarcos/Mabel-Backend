@@ -27,7 +27,7 @@ export class Endereco extends ValueObject<EnderecoProps> {
         super(valor)
     }
 
-    static criar({ rua, numero, bairro, cidade, estado, cepString, complemento }: EnderecoInput) {
+    static criar({ rua, numero, bairro, cidade, estado, cepString, complemento }: EnderecoInput): Endereco {
         const resultado = Validador.combinar(
             Validador.naoVazio(rua, "Rua"),
             Validador.tamanhoMaximo(rua, 150, "Rua"),
