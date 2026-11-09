@@ -1,5 +1,6 @@
 import { ValueObject } from "../../../../shared/domain/ValueObject";
 import { ResponsavelId } from "../../../responsavel/domain/Responsavel";
+import { AlunoId } from "../Aluno";
 
 export enum TipoVinculo {
     PAI = 'PAI',
@@ -9,13 +10,25 @@ export enum TipoVinculo {
     TRANSPORTE = 'TRANSPORTE',
 }
 
-export class Vinculo extends ValueObject<{
-    responsavelId: ResponsavelId;
-    tipo: TipoVinculo;
-    buscaAutorizada: boolean;
-    contatoEmergencia: boolean;
-}> {
+export interface VinculoInput {
+    alunoId: AlunoId,
+    responsavelId: ResponsavelId,
+    tipo: string,
+    buscaAutorizada: boolean,
+    contatoEmergencia: boolean
+}
+
+export interface VinculoProps {
+    alunoId: AlunoId,
+    responsavelId: ResponsavelId,
+    tipo: TipoVinculo,
+    buscaAutorizada: boolean,
+    contatoEmergencia: boolean
+}
+
+export class Vinculo extends ValueObject<VinculoProps> {
     private constructor(props: {
+        alunoId: AlunoId
         responsavelId: ResponsavelId;
         tipo: TipoVinculo;
         buscaAutorizada: boolean;
@@ -24,22 +37,17 @@ export class Vinculo extends ValueObject<{
         super(props);
     }
 
-    static criar(
-        responsavelId: string,
-        tipo: string,
-        buscaAutorizada: boolean,
-        contatoEmergencia: boolean
-    ): Vinculo {
-        if (!Object.values(TipoVinculo).includes(tipo as TipoVinculo)) {
+    static criar(data: VinculoInput): Vinculo {
+        if (!Object.values(TipoVinculo).includes(data.tipo as TipoVinculo)) {
             throw new Error('Tipo de vínculo inválido');
         }
 
-        return new Vinculo({
-            responsavelId: new ResponsavelId(responsavelId),
-            tipo: tipo as TipoVinculo,
-            buscaAutorizada,
-            contatoEmergencia,
-        });
+        const props: VinculoProps = {
+            ...data,
+            tipo: data.tipo as TipoVinculo,
+        };
+
+        return new Vinculo(props);
     }
 
     get responsavelId(): ResponsavelId { return this._props.responsavelId; }

@@ -1,4 +1,3 @@
-import { da } from "zod/v4/locales";
 import { AggregateRoot } from "../../../shared/domain/AggregateRoot";
 import { Identifier } from "../../../shared/domain/Identifier";
 import { Endereco, EnderecoInput } from "../../../shared/domain/value-objects/Endereco";
@@ -18,7 +17,7 @@ interface FichaProps {
     dataFim?: Date
 }
 
-interface FichaCriarInput {
+export interface FichaCriarInput {
     descontoFixo?: number,
     descontoPercentual?: number,
     valorPlano: number,

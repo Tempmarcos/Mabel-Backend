@@ -14,7 +14,15 @@ interface AlunoProps {
     medicamentos?: Medicamentos,
     religiao?: Religiao,
     ativo: boolean,
-    vinculos: Vinculo[]
+}
+
+export interface AlunoInput {
+    nome: string,
+    dataNascimento: Date,
+    informacoes?: string,
+    medicamentos?: string,
+    religiao?: string,
+    ativo: boolean,
 }
 
 export class AlunoId extends Identifier {
@@ -52,23 +60,16 @@ export class Aluno extends AggregateRoot<AlunoId, AlunoProps> {
         return this.props.medicamentos
     }
 
-    get vinculos(): Vinculo[] {
-        return [...this.props.vinculos];
-    }
-
-    static criar(id: string, nomeString: string, dataNascimentoDate: Date,
-        informacoesString: string, medicamentosString: string, religiaoString: string,
-        ativo: boolean) {
+    static criar(id: string, data: AlunoInput) {
         const aluno = new Aluno(
             new AlunoId(id),
             {
-                nome: Nome.criar(nomeString),
-                dataNascimento: DataNascimento.criar(dataNascimentoDate),
-                informacoes: Informacoes.criar(informacoesString),
-                medicamentos: Medicamentos.criar(medicamentosString),
-                religiao: Religiao.criar(religiaoString),
-                ativo,
-                vinculos: [],
+                nome: Nome.criar(data.nome),
+                dataNascimento: DataNascimento.criar(data.dataNascimento),
+                ...(data.informacoes !== undefined && { informacoes: Informacoes.criar(data.informacoes) }),
+                ...(data.medicamentos !== undefined && { medicamentos: Medicamentos.criar(data.medicamentos) }),
+                ...(data.religiao !== undefined && { religiao: Religiao.criar(data.religiao) }),
+                ativo: data.ativo,
             }
         )
 
@@ -101,7 +102,6 @@ export class Aluno extends AggregateRoot<AlunoId, AlunoProps> {
                 medicamentos: Medicamentos.criar(medicamentosString),
                 religiao: Religiao.criar(religiaoString),
                 ativo,
-                vinculos: 
             }
         )
         return aluno;
