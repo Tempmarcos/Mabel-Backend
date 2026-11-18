@@ -1,12 +1,12 @@
 import { ValueObject } from "../../../../shared/domain/ValueObject";
 
-interface Iprops {
-    idadeMin?: number,
-    idadeMax?: number
+export interface FaixaEtariaInput {
+    idadeMin?: number | undefined,
+    idadeMax?: number | undefined
 }
 
-export class FaixaEtaria extends ValueObject<Iprops> {
-    private constructor(valor: Iprops) {
+export class FaixaEtaria extends ValueObject<FaixaEtariaInput> {
+    private constructor(valor: FaixaEtariaInput) {
         super(valor)
     }
 
@@ -18,7 +18,7 @@ export class FaixaEtaria extends ValueObject<Iprops> {
         return this._props.idadeMax;
     }
 
-    static criar(props: Iprops): FaixaEtaria {
+    static criar(props: FaixaEtariaInput): FaixaEtaria {
         if (props.idadeMax === undefined && props.idadeMin === undefined)
             throw new Error('Precisa ser uma faixa válida');
         if (props.idadeMax && (props.idadeMax > 18 || props.idadeMax < 1))

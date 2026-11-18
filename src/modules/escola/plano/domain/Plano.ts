@@ -6,7 +6,7 @@ export class PlanoId extends Identifier {
     constructor(valor: string) { super(valor); }
 }
 
-interface PlanoProps {
+export interface PlanoProps {
     nome: string,
     descricao: string,
     frequenciaSemanal: number,

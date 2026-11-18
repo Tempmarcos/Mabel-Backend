@@ -11,6 +11,15 @@ export class ResponsavelId extends Identifier {
     }
 }
 
+export interface ResponsavelInput {
+    nome: string,
+    cpf: string,
+    email?: string,
+    telefone?: string,
+    trabalho?: string,
+    funcao?: string
+}
+
 interface ResponsavelProps {
     nome: Nome,
     cpf: CPF,
@@ -44,24 +53,16 @@ export class Responsavel extends AggregateRoot<ResponsavelId, ResponsavelProps> 
         return this.props.funcao;
     }
 
-    static criar(
-        id: string,
-        nomeString: string,
-        cpfString: string,
-        emailString?: string,
-        telefoneString?: string,
-        trabalho?: string,
-        funcao?: string
-    ): Responsavel {
+    static criar(id: string, data: ResponsavelInput): Responsavel {
         const responsavel = new Responsavel(
             new ResponsavelId(id),
             {
-                nome: Nome.criar(nomeString),
-                cpf: CPF.criar(cpfString),
-                ...(emailString && { email: Email.criar(emailString) }),
-                ...(telefoneString && { telefone: Telefone.criar(telefoneString) }),
-                ...(trabalho && { trabalho }),
-                ...(funcao && { funcao })
+                nome: Nome.criar(data.nome),
+                cpf: CPF.criar(data.cpf),
+                ...(data.email && { email: Email.criar(data.email) }),
+                ...(data.telefone && { telefone: Telefone.criar(data.telefone) }),
+                ...(data.trabalho && { trabalho: data.trabalho }),
+                ...(data.funcao && { funcao: data.funcao })
             }
         );
 
@@ -72,24 +73,16 @@ export class Responsavel extends AggregateRoot<ResponsavelId, ResponsavelProps> 
         return responsavel;
     }
 
-    static restaurar(
-        id: string,
-        nomeString: string,
-        cpfString: string,
-        emailString?: string,
-        telefoneString?: string,
-        trabalho?: string,
-        funcao?: string
-    ): Responsavel {
+    static restaurar(id: string, data: ResponsavelInput): Responsavel {
         const responsavel = new Responsavel(
             new ResponsavelId(id),
             {
-                nome: Nome.criar(nomeString),
-                cpf: CPF.criar(cpfString),
-                ...(emailString && { email: Email.criar(emailString) }),
-                ...(telefoneString && { telefone: Telefone.criar(telefoneString) }),
-                ...(trabalho && { trabalho }),
-                ...(funcao && { funcao })
+                nome: Nome.criar(data.nome),
+                cpf: CPF.criar(data.cpf),
+                ...(data.email && { email: Email.criar(data.email) }),
+                ...(data.telefone && { telefone: Telefone.criar(data.telefone) }),
+                ...(data.trabalho && { trabalho: data.trabalho }),
+                ...(data.funcao && { funcao: data.funcao })
             }
         );
 

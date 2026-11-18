@@ -1,6 +1,7 @@
 import { AggregateRoot } from "../../../shared/domain/AggregateRoot"
 import { Identifier } from "../../../shared/domain/Identifier"
 import { Turno } from "../../../shared/domain/value-objects/Turno"
+import { Validador } from "../../../shared/domain/value-objects/Validador"
 import { FaixaEtaria } from "./value-objects/FaixaEtaria"
 import { NomeTurma } from "./value-objects/NomeTurma"
 
@@ -10,6 +11,14 @@ interface TurmaProps {
   faixaEtaria?: FaixaEtaria,
   capacidade?: number,
   turno: Turno
+}
+
+interface TurmaInput {
+  nome: string,
+  idadeMinima?: number,
+  idadeMaxima?: number,
+  capacidade?: number,
+  turno: string
 }
 
 export class TurmaId extends Identifier {
@@ -47,19 +56,27 @@ export class Turma extends AggregateRoot<TurmaId, TurmaProps> {
     return this.props.faixaEtaria;
   }
 
-  static criar(id: string, nomeString: string, turnoString: Turno, capacidadeInt?: number,
-    faixaEtaria?: { idadeMin: number, idadeMax: number }): Turma {
+  static criar(id: string, data: TurmaInput): Turma {
+    if (!Object.values(Turno).includes(data.turno as Turno)) {
+      throw new Error('Turno inválido');
+    }
     const props: TurmaProps = {
-      nome: NomeTurma.criar(nomeString),
-      turno: turnoString,
+      nome: NomeTurma.criar(data.nome),
+      turno: data.turno as Turno,
     };
 
-    if (capacidadeInt !== undefined) {
-      props.capacidade = capacidadeInt;
+    if (data.capacidade !== undefined) {
+      const resultado = Validador.combinar(
+        Validador.faixa(props.capacidade!, 5, 30, 'Capacidade')
+      )
+      if (!resultado.valido) {
+        throw new Error(resultado.erro);
+      }
+      props.capacidade = data.capacidade;
     }
 
-    if (faixaEtaria !== undefined) {
-      props.faixaEtaria = FaixaEtaria.criar(faixaEtaria);
+    if (data.idadeMinima !== undefined || data.idadeMaxima !== undefined) {
+      props.faixaEtaria = FaixaEtaria.criar({ idadeMin: data.idadeMinima, idadeMax: data.idadeMaxima });
     }
 
     const turma = new Turma(new TurmaId(id), props)
@@ -70,19 +87,21 @@ export class Turma extends AggregateRoot<TurmaId, TurmaProps> {
     return turma;
   }
 
-  static restaurar(id: string, nomeString: string, turnoString: Turno, capacidadeInt?: number,
-    faixaEtaria?: { idadeMin: number, idadeMax: number }): Turma {
+  static restaurar(id: string, data: TurmaInput): Turma {
+    if (!Object.values(Turno).includes(data.turno as Turno)) {
+      throw new Error('Turno inválido');
+    }
     const props: TurmaProps = {
-      nome: NomeTurma.criar(nomeString),
-      turno: turnoString,
+      nome: NomeTurma.criar(data.nome),
+      turno: data.turno as Turno,
     };
 
-    if (capacidadeInt !== undefined) {
-      props.capacidade = capacidadeInt;
+    if (data.capacidade !== undefined) {
+      props.capacidade = data.capacidade;
     }
 
-    if (faixaEtaria !== undefined) {
-      props.faixaEtaria = FaixaEtaria.criar(faixaEtaria);
+    if (data.idadeMinima !== undefined || data.idadeMaxima !== undefined) {
+      props.faixaEtaria = FaixaEtaria.criar({ idadeMin: data.idadeMinima, idadeMax: data.idadeMaxima });
     }
 
     const turma = new Turma(new TurmaId(id), props)

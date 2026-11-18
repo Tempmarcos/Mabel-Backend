@@ -8,6 +8,11 @@ export class ResponsavelFinanceiroId extends Identifier {
     }
 }
 
+export interface ResponsavelFinanceiroInput {
+    endereco: EnderecoInput,
+    metodoPagamento: string
+}
+
 interface ResponsavelFinanceiroProps {
     endereco: Endereco,
     metodoPagamento: string
@@ -26,13 +31,12 @@ export class ResponsavelFinanceiro extends AggregateRoot<ResponsavelFinanceiroId
         return this.props.metodoPagamento;
     }
 
-    static criar(id: string, metodoPagamento: string, endereco: EnderecoInput
-    ): ResponsavelFinanceiro {
+    static criar(id: string, data: ResponsavelFinanceiroInput): ResponsavelFinanceiro {
         const responsavelFinanceiro = new ResponsavelFinanceiro(
             new ResponsavelFinanceiroId(id),
             {
-                endereco: Endereco.criar(endereco),
-                metodoPagamento
+                endereco: Endereco.criar(data.endereco),
+                metodoPagamento: data.metodoPagamento
             }
         );
 
